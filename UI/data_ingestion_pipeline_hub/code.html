@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Data Ingestion - CarbonEngine</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#d8e3fb",
+                      "surface-dim": "#0b1326",
+                      "outline": "#879391",
+                      "surface-bright": "#31394e",
+                      "surface": "#0b1326",
+                      "inverse-primary": "#006a61",
+                      "on-tertiary-container": "#4f1700",
+                      "outline-variant": "#3d4947",
+                      "surface-container-high": "#222a3e",
+                      "secondary": "#bcc7de",
+                      "primary-container": "#29a195",
+                      "primary-fixed-dim": "#6bd8cb",
+                      "on-secondary-fixed": "#111c2d",
+                      "surface-container-low": "#131b2e",
+                      "primary-fixed": "#89f5e7",
+                      "secondary-fixed-dim": "#bcc7de",
+                      "surface-container-highest": "#2d3449",
+                      "on-surface-variant": "#bcc9c6",
+                      "on-surface": "#dbe2fd",
+                      "surface-variant": "#2d3449",
+                      "error-container": "#93000a",
+                      "on-tertiary-fixed-variant": "#773215",
+                      "on-tertiary-fixed": "#370e00",
+                      "tertiary": "#ffb59a",
+                      "secondary-container": "#3e495d",
+                      "tertiary-fixed-dim": "#ffb59a",
+                      "tertiary-container": "#d27956",
+                      "inverse-on-surface": "#283044",
+                      "background": "#0b1326",
+                      "primary": "#6bd8cb",
+                      "on-error-container": "#ffdad6",
+                      "surface-tint": "#6bd8cb",
+                      "on-background": "#dbe2fd",
+                      "surface-container-lowest": "#060d20",
+                      "on-primary-fixed-variant": "#005049",
+                      "on-tertiary": "#591c02",
+                      "on-secondary-fixed-variant": "#3c475a",
+                      "on-primary-container": "#00302b",
+                      "on-secondary-container": "#aeb9d0",
+                      "on-secondary": "#263143",
+                      "on-error": "#690005",
+                      "inverse-surface": "#dbe2fd",
+                      "surface-container": "#171f33",
+                      "on-primary-fixed": "#00201d",
+                      "error": "#ffb4ab",
+                      "on-primary": "#003732",
+                      "tertiary-fixed": "#ffdbce"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "gutter": "16px",
+                      "container-max": "100%",
+                      "sidebar-width": "260px",
+                      "margin-desktop": "32px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "mono-data": ["monospace"],
+                      "title-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "mono-data": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        /* Custom scrollbar for data tables */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3d4947;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #879391;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex overflow-hidden font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-sidebar-width bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant dark:border-outline-variant py-gutter z-20">
+<!-- Brand Header -->
+<div class="px-6 pb-8 border-b border-outline-variant mb-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-DEFAULT bg-primary flex items-center justify-center text-on-primary shadow-[0_0_15px_rgba(107,216,203,0.3)]">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">factory</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">CarbonEngine</h1>
+<p class="font-label-md text-label-md text-on-surface-variant mt-1">Enterprise v2.4</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<ul class="flex flex-col px-3 space-y-1 overflow-y-auto flex-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+</li>
+<li>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT bg-secondary-container text-on-secondary-container font-semibold cursor-pointer active:scale-95 relative overflow-hidden group" href="#">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r"></div>
+<span class="material-symbols-outlined text-[20px] text-primary" data-icon="upload_file" style="font-variation-settings: 'FILL' 1;">upload_file</span>
+<span class="font-body-md text-body-md">Ingestion</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors" data-icon="assignment_late">assignment_late</span>
+<span class="font-body-md text-body-md flex-1">Review Queue</span>
+<span class="bg-error-container text-on-error-container font-label-md text-[10px] px-1.5 py-0.5 rounded-DEFAULT leading-none">12</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors" data-icon="bar_chart">bar_chart</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+</li>
+</ul>
+<!-- Bottom Actions -->
+<div class="px-3 pt-4 border-t border-outline-variant mt-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-[260px] relative w-full h-screen">
+<!-- TopNavBar -->
+<header class="hidden md:flex fixed top-0 right-0 w-[calc(100%-260px)] h-16 bg-surface dark:bg-surface border-b border-outline-variant dark:border-outline-variant justify-between items-center px-margin-desktop z-10">
+<!-- Left Side: Product / Context -->
+<div class="flex items-center gap-6">
+<div class="font-title-lg text-title-lg font-semibold text-on-surface">Global Logistics Corp</div>
+<!-- Nav Links (Inactive by default for this view to avoid hallucination, acting as tabs) -->
+<nav class="hidden lg:flex gap-6 ml-4">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors py-5 border-b-2 border-transparent" href="#">Direct Emissions</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors py-5 border-b-2 border-transparent" href="#">Indirect Emissions</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors py-5 border-b-2 border-transparent" href="#">Offset Registry</a>
+</nav>
+</div>
+<!-- Right Side: Actions & Profile -->
+<div class="flex items-center gap-4">
+<div class="relative text-on-surface-variant">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</span>
+<input class="w-64 bg-surface-container-low border border-outline-variant rounded-DEFAULT py-1.5 pl-9 pr-3 font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search resources..." type="text"/>
+</div>
+<div class="flex items-center gap-2 border-l border-outline-variant pl-4 ml-2">
+<button class="p-1.5 rounded-DEFAULT text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors relative cursor-pointer">
+<span class="material-symbols-outlined text-[22px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full ring-2 ring-surface"></span>
+</button>
+<button class="p-1.5 rounded-DEFAULT text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[22px]" data-icon="help_outline">help_outline</span>
+</button>
+<button class="ml-2 w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUZ0B1hrhLt9LG_EfOzS2iw0gyds3Gd4sw5ascv6M0wPKRVbjeEvOLxtb1Jg_41V0peR0t_Y9ZZuGjTC_xXxF1yS5H-bvBYACjgAOuXSy2br3adfzyiVIVNWfai5hhgWCw10_INC2NBVX3OhwMtzt2yjw6P7LOd9R1NOkWfnB9kOaWpEkwCa8mMZVA3mnKs0g6pU9V9iAL-nR-uzc84SP4kF3ApLuHvw-iq_aMUdBRlcORa993_0j4EnAmoKzrGUpV61sa-KkMDQE"/>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto pt-16 p-margin-desktop bg-background">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Data Ingestion</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Upload primary facility data or manage active pipeline queues.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-DEFAULT font-label-md text-label-md text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+                        Refresh Sync
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-DEFAULT font-label-md text-label-md hover:bg-primary-fixed transition-colors shadow-[0_0_10px_rgba(107,216,203,0.2)]">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">add</span>
+                        New Pipeline
+                    </button>
+</div>
+</div>
+<!-- Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Panel: Upload & Config (4 Columns) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<!-- Upload Zone Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-DEFAULT p-6 flex flex-col">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-4 border-b border-outline-variant pb-2">Manual Upload</h3>
+<div class="mt-2 border-2 border-dashed border-outline-variant hover:border-primary bg-surface transition-colors rounded-DEFAULT p-8 flex flex-col items-center justify-center text-center cursor-pointer group">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mb-4 group-hover:bg-primary-container/20 group-hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[28px]">cloud_upload</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface mb-1">Drag and drop files here</span>
+<span class="font-label-md text-label-md text-outline">or click to browse local storage</span>
+<div class="mt-4 flex gap-2">
+<span class="px-2 py-1 bg-surface-container text-on-surface-variant font-mono-data text-[10px] rounded-DEFAULT border border-outline-variant">.CSV</span>
+<span class="px-2 py-1 bg-surface-container text-on-surface-variant font-mono-data text-[10px] rounded-DEFAULT border border-outline-variant">.XLSX</span>
+<span class="px-2 py-1 bg-surface-container text-on-surface-variant font-mono-data text-[10px] rounded-DEFAULT border border-outline-variant">.JSON</span>
+</div>
+</div>
+<!-- Source Category Selector -->
+<div class="mt-6">
+<label class="font-label-md text-label-md text-on-surface-variant block mb-2">Target Schema / Category</label>
+<div class="relative">
+<select class="w-full bg-surface border border-outline-variant rounded-DEFAULT px-3 py-2.5 font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+<option value="utility">Utility Provider Data (Scope 2)</option>
+<option value="fleet">Fleet Telemetry (Scope 1)</option>
+<option value="travel">Business Travel Logs (Scope 3)</option>
+<option value="waste">Waste Management Manifests</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">arrow_drop_down</span>
+</div>
+</div>
+</div>
+<button class="mt-6 w-full py-2.5 bg-surface-container border border-outline-variant rounded-DEFAULT font-label-md text-label-md text-on-surface-variant hover:text-primary hover:border-primary transition-colors">
+                            Validate Schema
+                        </button>
+</div>
+<!-- System Status Mini-Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-DEFAULT p-5">
+<div class="flex justify-between items-center mb-3">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Ingestion Engine</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#6bd8cb] animate-pulse"></span>
+<span class="font-mono-data text-[11px] text-primary">ONLINE</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="font-label-md text-label-md text-outline mb-1">Queue Load</p>
+<p class="font-mono-data text-[16px] text-on-surface">24%</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-outline mb-1">Processing Rate</p>
+<p class="font-mono-data text-[16px] text-on-surface">1.2M rows/s</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel: Execution Queue (8 Columns) -->
+<div class="col-span-12 lg:col-span-8 flex flex-col">
+<div class="bg-surface-container-low border border-outline-variant rounded-DEFAULT flex-1 flex flex-col overflow-hidden">
+<!-- Table Header / Action Bar -->
+<div class="px-5 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h3 class="font-title-lg text-title-lg text-on-surface">Job Execution Queue</h3>
+<div class="flex gap-2">
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+<span class="material-symbols-outlined text-[16px] text-outline">filter_list</span>
+</span>
+<select class="bg-surface border border-outline-variant rounded-DEFAULT pl-8 pr-8 py-1.5 font-label-md text-label-md text-on-surface-variant appearance-none focus:outline-none focus:border-primary">
+<option>All Statuses</option>
+<option>Processing</option>
+<option>Failed</option>
+<option>Completed</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface border-b border-outline-variant">
+<th class="font-label-md text-label-md text-on-surface-variant py-2.5 px-4 whitespace-nowrap">Job ID</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-2.5 px-4 whitespace-nowrap">Source / Category</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-2.5 px-4 whitespace-nowrap">Timestamp</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-2.5 px-4 whitespace-nowrap text-right">Records</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-2.5 px-4 whitespace-nowrap">Progress</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-2.5 px-4 whitespace-nowrap text-center">Status</th>
+<th class="py-2.5 px-4"></th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<!-- Row 1: Processing -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container-highest transition-colors">
+<td class="py-3 px-4 font-mono-data text-outline">#J-8823-AX</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container">directions_car</span>
+<span>Fleet Telemetry Q3</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono-data text-[12px] text-on-surface-variant">10:42:01 UTC</td>
+<td class="py-3 px-4 font-mono-data text-[13px] text-right">4.2M</td>
+<td class="py-3 px-4 w-48">
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1.5 bg-surface-bright rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 65%;"></div>
+</div>
+<span class="font-mono-data text-[10px] text-primary">65%</span>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-DEFAULT bg-primary/10 border border-primary/20 text-primary font-label-md text-[10px] uppercase">Processing</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]">stop_circle</span></button>
+</td>
+</tr>
+<!-- Row 2: Completed -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container-highest transition-colors">
+<td class="py-3 px-4 font-mono-data text-outline">#J-8822-BZ</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">electrical_services</span>
+<span>Utility_NYC_HQ_Sep</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono-data text-[12px] text-on-surface-variant">09:15:33 UTC</td>
+<td class="py-3 px-4 font-mono-data text-[13px] text-right">18.5K</td>
+<td class="py-3 px-4 w-48">
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1.5 bg-surface-bright rounded-full overflow-hidden">
+<div class="h-full bg-surface-variant rounded-full" style="width: 100%;"></div>
+</div>
+<span class="font-mono-data text-[10px] text-on-surface-variant">100%</span>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-DEFAULT bg-surface-bright text-on-surface-variant font-label-md text-[10px] uppercase">Completed</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+</td>
+</tr>
+<!-- Row 3: Failed -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container-highest transition-colors bg-error-container/5">
+<td class="py-3 px-4 font-mono-data text-outline">#J-8821-CX</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-error">flight_takeoff</span>
+<span class="text-error-container">Travel_Logs_EMEA</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono-data text-[12px] text-on-surface-variant">08:02:11 UTC</td>
+<td class="py-3 px-4 font-mono-data text-[13px] text-right">942</td>
+<td class="py-3 px-4 w-48">
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1.5 bg-surface-bright rounded-full overflow-hidden">
+<div class="h-full bg-error rounded-full" style="width: 12%;"></div>
+</div>
+<span class="font-mono-data text-[10px] text-error">12%</span>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-DEFAULT bg-error-container/20 border border-error-container/30 text-error font-label-md text-[10px] uppercase">
+<span class="material-symbols-outlined text-[12px]">warning</span>
+                                                Failed
+                                            </span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[18px]">restart_alt</span></button>
+</td>
+</tr>
+<!-- Row 4: Queued -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container-highest transition-colors opacity-70">
+<td class="py-3 px-4 font-mono-data text-outline">#J-8824-DY</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">recycling</span>
+<span>Waste_Manifest_Auto</span>
+</div>
+</td>
+<td class="py-3 px-4 font-mono-data text-[12px] text-on-surface-variant">--:--:-- UTC</td>
+<td class="py-3 px-4 font-mono-data text-[13px] text-right">~50K</td>
+<td class="py-3 px-4 w-48">
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1.5 bg-surface-bright rounded-full overflow-hidden relative">
+<!-- Indeterminate loader styling via gradient -->
+<div class="absolute top-0 bottom-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-outline-variant to-transparent animate-[translateX_2s_infinite]"></div>
+</div>
+<span class="font-mono-data text-[10px] text-on-surface-variant">0%</span>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-DEFAULT border border-outline-variant text-outline font-label-md text-[10px] uppercase">Queued</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]">cancel</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="px-5 py-3 border-t border-outline-variant bg-surface flex justify-between items-center text-on-surface-variant font-label-md text-label-md mt-auto">
+<span>Showing 4 of 124 active jobs</span>
+<div class="flex items-center gap-1">
+<button class="p-1 hover:bg-surface-container rounded-DEFAULT transition-colors disabled:opacity-50"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+<span class="px-2">Page 1 / 31</span>
+<button class="p-1 hover:bg-surface-container rounded-DEFAULT transition-colors"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Minimal JS for indeterminate progress bar animation to avoid relying purely on tailwind arbitrary classes if they fail -->
+<style>
+        @keyframes translateX {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+    </style>
+</body></html>
