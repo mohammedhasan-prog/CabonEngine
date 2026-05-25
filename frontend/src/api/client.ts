@@ -54,7 +54,7 @@ api.interceptors.response.use(
       }
 
       try {
-        const resp = await axios.post("/api/auth/token/refresh/", { refresh });
+        const resp = await axios.post("/api/auth/refresh/", { refresh });
         const newAccess = resp.data.access;
         tokenStore.setAccessToken(newAccess);
         originalReq.headers["Authorization"] = `Bearer ${newAccess}`;

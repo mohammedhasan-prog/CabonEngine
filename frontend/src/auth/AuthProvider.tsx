@@ -31,9 +31,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (username: string, password: string, tenant?: string) => {
-    const payload: any = { username, password };
+    const payload: any = { username, email: username, password };
     if (tenant) payload.tenant = tenant;
-    const resp = await api.post("/auth/token/", payload);
+    const resp = await api.post("/auth/login/", payload);
     const { access, refresh } = resp.data;
     tokenStore.setTokens(access, refresh);
     const profile = await api.get("/auth/me/");
@@ -41,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    api.post("/auth/logout/").catch(() => undefined);
     tokenStore.clear();
     setUser(null);
   };
