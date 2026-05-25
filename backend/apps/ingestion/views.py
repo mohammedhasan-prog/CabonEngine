@@ -8,6 +8,7 @@ from .serializers import (
     IngestionRunSerializer,
     IngestionUploadSerializer,
 )
+from apps.audit.models import AuditEvent
 
 
 class TenantIngestionQuerysetMixin:
@@ -39,6 +40,14 @@ class IngestionUploadView(APIView):
         serializer = IngestionUploadSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         ingestion_job = serializer.save()
+        AuditEvent.objects.create(
+            tenant=ingestion_job.tenant,
+            actor=request.user,
+            action=AuditEvent.Action.CREATE,
+            object_type="IngestionJob",
+            object_id=str(ingestion_job.id),
+            payload={"file_name": ingestion_job.file_name, "status": ingestion_job.status},
+        )
         return Response(IngestionJobSerializer(ingestion_job).data, status=status.HTTP_201_CREATED)
 
 
@@ -49,4 +58,12 @@ class IngestionRunView(APIView):
         serializer = IngestionRunSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         ingestion_job = serializer.save()
+        AuditEvent.objects.create(
+            tenant=ingestion_job.tenant,
+            actor=request.user,
+            action=AuditEvent.Action.RUN,
+            object_type="IngestionJob",
+            object_id=str(ingestion_job.id),
+            payload={"status": ingestion_job.status, "started_at": ingestion_job.started_at.isoformat() if ingestion_job.started_at else None},
+        )
         return Response(IngestionJobSerializer(ingestion_job).data)

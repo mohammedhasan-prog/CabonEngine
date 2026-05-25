@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CARBON.OS - Data Ingestion</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#dae2fd",
+                    "outline-variant": "#3d4947",
+                    "on-secondary": "#233144",
+                    "on-tertiary-fixed": "#370e00",
+                    "on-background": "#dae2fd",
+                    "error-container": "#93000a",
+                    "surface-container-low": "#131b2e",
+                    "tertiary": "#ffb59a",
+                    "primary-container": "#29a195",
+                    "on-error": "#690005",
+                    "surface-container": "#171f33",
+                    "tertiary-fixed-dim": "#ffb59a",
+                    "surface-container-high": "#222a3d",
+                    "inverse-primary": "#006a61",
+                    "surface": "#0b1326",
+                    "primary": "#6bd8cb",
+                    "on-primary": "#003732",
+                    "surface-bright": "#31394d",
+                    "secondary-fixed": "#d5e3fd",
+                    "on-tertiary": "#591c02",
+                    "on-primary-fixed": "#00201d",
+                    "inverse-on-surface": "#283044",
+                    "primary-fixed": "#89f5e7",
+                    "surface-tint": "#6bd8cb",
+                    "on-tertiary-fixed-variant": "#773215",
+                    "on-secondary-container": "#abb9d2",
+                    "secondary-container": "#3c4a5e",
+                    "on-tertiary-container": "#4f1700",
+                    "on-primary-container": "#00302b",
+                    "surface-container-lowest": "#060e20",
+                    "surface-variant": "#2d3449",
+                    "error": "#ffb4ab",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "tertiary-container": "#d27956",
+                    "background": "#0b1326",
+                    "surface-dim": "#0b1326",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "secondary": "#b9c7e0",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "on-surface-variant": "#bcc9c6",
+                    "primary-fixed-dim": "#6bd8cb",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-fixed": "#ffdbce",
+                    "surface-container-highest": "#2d3449",
+                    "outline": "#879391",
+                    "on-primary-fixed-variant": "#005049",
+                    "on-surface": "#dae2fd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "topbar_height": "64px",
+                    "stack_md": "16px",
+                    "unit": "4px",
+                    "margin_container": "32px",
+                    "gutter": "24px",
+                    "sidebar_width": "260px",
+                    "stack_sm": "8px",
+                    "stack_lg": "24px"
+            },
+            "fontFamily": {
+                    "metric-xl": ["Inter", "sans-serif"],
+                    "body-lg": ["Inter", "sans-serif"],
+                    "headline-sm": ["Inter", "sans-serif"],
+                    "label-sm": ["Inter", "sans-serif"],
+                    "label-md": ["Inter", "sans-serif"],
+                    "headline-md": ["Inter", "sans-serif"],
+                    "body-md": ["Inter", "sans-serif"],
+                    "body-sm": ["Inter", "sans-serif"],
+                    "headline-lg": ["Inter", "sans-serif"]
+            },
+            "fontSize": {
+                    "metric-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+                    "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                    "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                    "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                    "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                    "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                    "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                    "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                    "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen selection:bg-primary/30">
+<!-- NavigationDrawer -->
+<aside class="fixed left-0 top-0 h-full w-[260px] bg-surface-container border-r border-outline-variant flex flex-col py-stack_lg gap-stack_md z-50">
+<div class="px-stack_lg mb-stack_lg">
+<h1 class="text-headline-md font-headline-md font-black tracking-tight text-primary">CARBON.OS</h1>
+</div>
+<nav class="flex flex-col flex-grow">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-stack_lg py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<!-- Ingestion (Active) -->
+<a class="flex items-center gap-3 px-stack_lg py-3 text-primary font-bold border-r-2 border-primary bg-primary-container/10 opacity-90 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">upload_file</span>
+<span class="text-label-md font-label-md">Ingestion</span>
+</a>
+<!-- Review Queue -->
+<a class="flex items-center gap-3 px-stack_lg py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">fact_check</span>
+<span class="text-label-md font-label-md">Review Queue</span>
+</a>
+<!-- Reports -->
+<a class="flex items-center gap-3 px-stack_lg py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span class="text-label-md font-label-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto px-stack_lg">
+<a class="flex items-center gap-3 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 h-[64px] z-40 bg-surface border-b border-outline-variant flex justify-between items-center px-margin_container ml-[260px] w-[calc(100%-260px)]">
+<div class="flex items-center gap-3 text-primary">
+<span class="material-symbols-outlined text-xl">domain</span>
+<span class="text-headline-sm font-headline-sm">Global Logistics Corp</span>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-variant p-2 rounded-full transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[260px] mt-[64px] p-margin_container max-w-[1600px] mx-auto flex flex-col gap-gutter min-h-[calc(100vh-64px)]">
+<!-- Header Section -->
+<header class="flex flex-col gap-stack_sm">
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Data Ingestion &amp; Pipeline</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant">Upload raw inventory files and monitor ETL job execution status.</p>
+</header>
+<!-- Split Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter flex-grow">
+<!-- Left: Upload Area (col-span-4) -->
+<div class="lg:col-span-4 flex flex-col gap-stack_md">
+<div class="bg-surface-container border border-outline-variant rounded-xl p-stack_lg flex flex-col h-full gap-stack_lg shadow-sm">
+<div class="flex flex-col gap-stack_sm border-b border-outline-variant pb-stack_md">
+<h3 class="text-headline-sm font-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">cloud_upload</span>
+                            New Ingestion Job
+                        </h3>
+</div>
+<!-- Source Dropdown -->
+<div class="flex flex-col gap-unit">
+<label class="text-label-md font-label-md text-on-surface-variant">Source Category</label>
+<div class="relative">
+<select class="w-full bg-background border border-outline-variant text-body-md font-body-md text-on-surface rounded-lg py-3 pl-3 pr-10 appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+<option value="sap">SAP ERP Export</option>
+<option value="utility">Utility Provider Billing</option>
+<option value="travel">Corporate Travel Ledger</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Drag & Drop Zone -->
+<div class="flex-grow border-2 border-dashed border-outline-variant rounded-xl bg-surface-variant/10 hover:bg-surface-variant/30 transition-colors flex flex-col items-center justify-center p-stack_lg gap-stack_md cursor-pointer group">
+<div class="h-16 w-16 rounded-full bg-surface border border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-3xl text-primary">note_add</span>
+</div>
+<div class="text-center">
+<p class="text-body-lg font-body-lg text-on-surface mb-1">Drag and drop files here</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Supported formats: CSV, XLSX, JSON (Max 500MB)</p>

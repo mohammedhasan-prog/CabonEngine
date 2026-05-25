@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from apps.normalization.models import NormalizedRecord
 
 from .models import ReviewAction
+from apps.audit.models import AuditEvent
 from .permissions import CanModifyRecord
 from .serializers import NormalizedRecordSerializer, RecordUpdateSerializer
 
@@ -96,6 +97,15 @@ class RecordDetailView(TenantRecordQuerysetMixin, generics.RetrieveUpdateAPIView
             new_value=serializer.data,
         )
 
+        AuditEvent.objects.create(
+            tenant=updated_record.tenant,
+            actor=request.user,
+            action=AuditEvent.Action.EDIT,
+            object_type="NormalizedRecord",
+            object_id=str(updated_record.id),
+            payload={"old": old_value, "new": serializer.data, "note": request.data.get("note", "")},
+        )
+
         return Response(NormalizedRecordSerializer(updated_record).data)
 
 
@@ -118,6 +128,14 @@ class RecordApproveView(TenantRecordQuerysetMixin, APIView):
                 old_value=previous,
                 new_value={"status": record.status, "approval_status": record.approval_status},
             )
+            AuditEvent.objects.create(
+                tenant=record.tenant,
+                actor=request.user,
+                action=AuditEvent.Action.APPROVE,
+                object_type="NormalizedRecord",
+                object_id=str(record.id),
+                payload={"old": previous, "new": {"status": record.status, "approval_status": record.approval_status}, "note": request.data.get("note", "")},
+            )
         return Response(NormalizedRecordSerializer(record).data)
 
 
@@ -139,5 +157,13 @@ class RecordRejectView(TenantRecordQuerysetMixin, APIView):
                 note=request.data.get("note", ""),
                 old_value=previous,
                 new_value={"status": record.status, "approval_status": record.approval_status},
+            )
+            AuditEvent.objects.create(
+                tenant=record.tenant,
+                actor=request.user,
+                action=AuditEvent.Action.REJECT,
+                object_type="NormalizedRecord",
+                object_id=str(record.id),
+                payload={"old": previous, "new": {"status": record.status, "approval_status": record.approval_status}, "note": request.data.get("note", "")},
             )
         return Response(NormalizedRecordSerializer(record).data)
