@@ -18,6 +18,23 @@ export default function Reports() {
 
   const maxMonthAmount = Math.max(...byMonth.map((m: any) => m.amount || 0), 1);
 
+  const downloadCSV = () => {
+    if (!summary) return;
+    let csv = "Category,Type,Count,Amount (MT CO2e)\n";
+    byScope.forEach((s: any) => { csv += `Scope,${s.scope},${s.count},${s.amount}\n`; });
+    bySource.forEach((s: any) => { csv += `Source,${s.source_system__type},${s.count},${s.amount}\n`; });
+    byMonth.forEach((m: any) => { csv += `Month,${new Date(m.month).toISOString().slice(0, 7)},${m.count},${m.amount}\n`; });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "emissions_summary.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <AppShell
       active="reports"
@@ -26,18 +43,24 @@ export default function Reports() {
     >
       <div className="bg-surface-container border border-outline-variant rounded p-[12px] flex flex-wrap items-center justify-between gap-[16px]">
         <div className="flex items-center gap-[12px] flex-wrap">
-          <div className="flex items-center bg-background border border-outline-variant rounded px-[12px] py-[6px]">
+          <div 
+            className="flex items-center bg-background border border-outline-variant rounded px-[12px] py-[6px] cursor-pointer hover:bg-surface-variant transition-colors"
+            onClick={() => alert("Advanced Date and Facility filtering is coming in Phase 5!")}
+          >
             <span className="material-symbols-outlined text-on-surface-variant mr-[6px] text-[18px]">calendar_month</span>
             <input
-              className="bg-transparent border-none text-body-sm text-on-surface focus:outline-none w-[200px]"
+              className="bg-transparent border-none text-body-sm text-on-surface focus:outline-none w-[200px] pointer-events-none"
               readOnly
               value="Jan 01, 2024 - Dec 31, 2024"
               type="text"
             />
           </div>
-          <div className="flex items-center bg-background border border-outline-variant rounded px-[12px] py-[6px]">
+          <div 
+            className="flex items-center bg-background border border-outline-variant rounded px-[12px] py-[6px] cursor-pointer hover:bg-surface-variant transition-colors"
+            onClick={() => alert("Advanced Date and Facility filtering is coming in Phase 5!")}
+          >
             <span className="material-symbols-outlined text-on-surface-variant mr-[6px] text-[18px]">location_on</span>
-            <select className="bg-transparent border-none text-body-sm text-on-surface focus:outline-none appearance-none pr-[16px]">
+            <select className="bg-transparent border-none text-body-sm text-on-surface focus:outline-none appearance-none pr-[16px] pointer-events-none">
               <option>All Facilities (Global)</option>
               <option>NA Operations</option>
               <option>EMEA Logistics Hub</option>
@@ -45,7 +68,7 @@ export default function Reports() {
           </div>
         </div>
         <div className="flex items-center gap-[8px]">
-          <button onClick={() => alert("CSV Export feature coming soon!")} className="flex items-center gap-[6px] px-[12px] py-[6px] border border-outline-variant rounded text-on-surface text-body-sm hover:bg-surface-variant transition-colors">
+          <button onClick={downloadCSV} className="flex items-center gap-[6px] px-[12px] py-[6px] border border-outline-variant rounded text-on-surface text-body-sm hover:bg-surface-variant transition-colors">
             <span className="material-symbols-outlined text-[16px]">download</span>
             CSV
           </button>

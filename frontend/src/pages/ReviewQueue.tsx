@@ -37,6 +37,42 @@ export default function ReviewQueue() {
   const [onlyErrors, setOnlyErrors] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const handleCommitSelected = async () => {
+    if (selectedIds.size === 0) return;
+    
+    // Filter out records that are already approved (unless admin) to prevent 409 errors
+    const recordsToApprove = records.filter(r => selectedIds.has(r.id) && r.status !== "approved");
+    
+    if (recordsToApprove.length === 0) {
+      alert("All selected records are already approved!");
+      setSelectedIds(new Set());
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to approve ${recordsToApprove.length} pending records?`)) return;
+    
+    setLoading(true);
+    try {
+      const results = await Promise.allSettled(
+        recordsToApprove.map((record) => api.post(`/records/${record.id}/approve/`, { note: "Batch approved" }))
+      );
+      
+      const failed = results.filter(r => r.status === "rejected").length;
+      if (failed > 0) {
+        alert(`Warning: ${failed} records failed to approve.`);
+      }
+      
+      setSelectedIds(new Set());
+      loadRecords();
+    } catch (err) {
+      console.error("Batch commit failed", err);
+      alert("An unexpected error occurred during batch approval.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleApprove = async (record: any, note: string = "") => {
     try {
@@ -106,9 +142,13 @@ export default function ReviewQueue() {
               />
               Show Validation Errors Only
             </label>
-            <button className="bg-primary text-on-primary px-[16px] py-[8px] rounded text-label-md font-label-md hover:bg-primary-fixed transition-colors flex items-center gap-[6px]">
+            <button 
+              onClick={handleCommitSelected} 
+              disabled={selectedIds.size === 0 || loading}
+              className={`px-[16px] py-[8px] rounded text-label-md font-label-md transition-colors flex items-center gap-[6px] ${selectedIds.size > 0 ? "bg-primary text-on-primary hover:bg-primary-fixed" : "bg-surface-variant text-on-surface-variant opacity-50 cursor-not-allowed"}`}
+            >
               <span className="material-symbols-outlined text-[16px]">done_all</span>
-              Commit Selected
+              Commit Selected ({selectedIds.size})
             </button>
           </div>
           <div className="text-label-sm text-on-surface-variant uppercase tracking-wider">
@@ -159,7 +199,18 @@ export default function ReviewQueue() {
       <div className="flex-1 bg-surface-container border border-outline-variant rounded-lg overflow-hidden flex flex-col">
         <div className="grid grid-cols-[48px_120px_130px_minmax(160px,_1fr)_minmax(160px,_1fr)_120px_100px_80px] gap-[8px] items-center px-[16px] py-[12px] bg-surface-bright border-b-2 border-primary text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">
           <div className="flex justify-center">
-            <input type="checkbox" />
+            <input 
+              type="checkbox" 
+              className="rounded border-outline-variant text-primary focus:ring-primary"
+              checked={records.length > 0 && selectedIds.size === records.length}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setSelectedIds(new Set(records.map(r => r.id)));
+                } else {
+                  setSelectedIds(new Set());
+                }
+              }}
+            />
           </div>
           <div>Status</div>
           <div>Activity Date</div>
@@ -184,7 +235,17 @@ export default function ReviewQueue() {
                 className="grid grid-cols-[48px_120px_130px_minmax(160px,_1fr)_minmax(160px,_1fr)_120px_100px_80px] gap-[8px] items-center px-[16px] py-[12px] text-body-md text-on-surface hover:bg-surface-variant/40 transition-colors"
               >
                 <div className="flex justify-center">
-                  <input type="checkbox" />
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-outline-variant text-primary focus:ring-primary"
+                    checked={selectedIds.has(record.id)}
+                    onChange={(e) => {
+                      const newSet = new Set(selectedIds);
+                      if (e.target.checked) newSet.add(record.id);
+                      else newSet.delete(record.id);
+                      setSelectedIds(newSet);
+                    }}
+                  />
                 </div>
                 <div>
                   <span className={`inline-flex items-center gap-[6px] px-2.5 py-1 rounded-full border text-label-sm ${meta.className}`}>
