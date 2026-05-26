@@ -3,11 +3,12 @@ from rest_framework.response import Response
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.views import APIView
 
-from .models import IngestionJob
+from .models import IngestionJob, SourceSystem
 from .serializers import (
     IngestionJobSerializer,
     IngestionRunSerializer,
     IngestionUploadSerializer,
+    SourceSystemSerializer,
 )
 from apps.audit.models import AuditEvent
 from .services import process_ingestion_job
@@ -33,6 +34,17 @@ class IngestionJobDetailView(TenantIngestionQuerysetMixin, generics.RetrieveAPIV
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = IngestionJobSerializer
     lookup_field = "id"
+
+
+class SourceSystemListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SourceSystemSerializer
+
+    def get_queryset(self):
+        tenant = getattr(self.request.user, "tenant", None)
+        if tenant is None:
+            return SourceSystem.objects.none()
+        return SourceSystem.objects.filter(tenant=tenant).order_by("name")
 
 
 class IngestionUploadView(APIView):
