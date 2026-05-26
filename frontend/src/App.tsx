@@ -13,7 +13,13 @@ export default function App() {
 
   const location = useLocation();
   const isLogin = location.pathname === "/";
-  const isIngestion = location.pathname.startsWith("/ingestion");
+  const isShell =
+    location.pathname.startsWith("/ingestion") ||
+    location.pathname.startsWith("/review") ||
+    location.pathname.startsWith("/reports") ||
+    location.pathname.startsWith("/settings") ||
+    location.pathname.startsWith("/record") ||
+    location.pathname.startsWith("/dashboard");
 
   useEffect(() => {
     const loginClass =
@@ -24,12 +30,12 @@ export default function App() {
   }, [isLogin]);
 
   return (
-    <div style={{ padding: isLogin || isIngestion ? 0 : 20 }}>
-      {!isLogin && !isIngestion && (
+    <div style={{ padding: isLogin || isShell ? 0 : 20 }}>
+      {!isLogin && !isShell && (
         <header>
           <h1>ESG Admin</h1>
           <nav>
-            <Link to="/">Login</Link> | <Link to="/records">Records</Link> | <Link to="/ingestion">Ingestion</Link> | <Link to="/audit">Audit</Link> | <Link to="/designs">Designs</Link>
+            <Link to="/">Login</Link> | <Link to="/records">Records</Link> | <Link to="/ingestion">Ingestion</Link> | <Link to="/review">Review</Link> | <Link to="/reports">Reports</Link> | <Link to="/settings">Settings</Link> | <Link to="/dashboard">Dashboard</Link> | <Link to="/audit">Audit</Link> | <Link to="/designs">Designs</Link>
           </nav>
           <div style={{ float: "right" }}>
             {auth && auth.user ? (
@@ -41,7 +47,7 @@ export default function App() {
           </div>
         </header>
       )}
-      <main style={{ marginTop: isLogin || isIngestion ? 0 : 20 }}>
+      <main style={{ marginTop: isLogin || isShell ? 0 : 20 }}>
         <Outlet />
       </main>
     </div>

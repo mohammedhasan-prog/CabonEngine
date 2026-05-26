@@ -34,7 +34,7 @@ class LoginSerializer(TokenObtainPairSerializer):
         tenant = attrs.get("tenant")
 
         # Allow login by email; map to username expected by SimpleJWT.
-        if email and not attrs.get("username"):
+        if email:
             user = User.objects.filter(email__iexact=email).first()
             if user:
                 attrs["username"] = user.get_username()
