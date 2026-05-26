@@ -1,8 +1,10 @@
 import axios from "axios";
 import tokenStore from "../auth/tokenStore";
 
+const baseURL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "/api";
+
 const api = axios.create({
-  baseURL: "/api",
+  baseURL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -54,7 +56,7 @@ api.interceptors.response.use(
       }
 
       try {
-        const resp = await axios.post("/api/auth/refresh/", { refresh });
+        const resp = await axios.post(`${api.defaults.baseURL}/auth/refresh/`, { refresh });
         const newAccess = resp.data.access;
         tokenStore.setAccessToken(newAccess);
         originalReq.headers["Authorization"] = `Bearer ${newAccess}`;
