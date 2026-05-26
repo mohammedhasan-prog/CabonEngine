@@ -113,8 +113,14 @@ npm run dev
 
 ### 3. Login
 Open `http://localhost:5173`. Use one of the seeded credentials:
-- **Tenant**: `glc` | **Email**: `admin@glc.com` | **Password**: `password123`
-- **Tenant**: `tim` | **Email**: `admin@tim.com` | **Password**: `password123`
+
+**Admins (Full Dashboard Access)**
+- **Tenant**: `glc` | **Email**: `admin@glc.com` | **Password**: `Passw0rd!`
+- **Tenant**: `tim` | **Email**: `admin@tim.com` | **Password**: `Passw0rd!`
+
+**Analysts (Upload & Review Access)**
+- **Tenant**: `glc` | **Email**: `analyst@glc.com` | **Password**: `Passw0rd!`
+- **Tenant**: `tim` | **Email**: `analyst@tim.com` | **Password**: `Passw0rd!`
 
 ## 📝 API Routes (Base: `/api`)
 
