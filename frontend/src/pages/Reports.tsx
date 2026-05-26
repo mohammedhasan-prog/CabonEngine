@@ -4,13 +4,24 @@ import AppShell from "../components/AppShell";
 
 export default function Reports() {
   const [summary, setSummary] = useState<any>(null);
+  const [timeFilter, setTimeFilter] = useState<"ytd" | "12m" | "all">("all");
 
   useEffect(() => {
+    const params: any = {};
+    const now = new Date();
+    
+    if (timeFilter === "ytd") {
+      params.date_from = `${now.getFullYear()}-01-01`;
+    } else if (timeFilter === "12m") {
+      const lastYear = new Date(now.setFullYear(now.getFullYear() - 1));
+      params.date_from = lastYear.toISOString().split("T")[0];
+    }
+
     api
-      .get("/reports/summary/")
+      .get("/reports/summary/", { params })
       .then((res) => setSummary(res.data))
       .catch(() => setSummary(null));
-  }, []);
+  }, [timeFilter]);
 
   const byScope = summary?.by_scope || [];
   const bySource = summary?.by_source || [];
@@ -43,17 +54,18 @@ export default function Reports() {
     >
       <div className="bg-surface-container border border-outline-variant rounded p-[12px] flex flex-wrap items-center justify-between gap-[16px]">
         <div className="flex items-center gap-[12px] flex-wrap">
-          <div 
-            className="flex items-center bg-background border border-outline-variant rounded px-[12px] py-[6px] cursor-pointer hover:bg-surface-variant transition-colors"
-            onClick={() => alert("Advanced Date and Facility filtering is coming in Phase 5!")}
-          >
+          <div className="flex items-center bg-background border border-outline-variant rounded px-[12px] py-[6px] cursor-pointer hover:bg-surface-variant transition-colors">
             <span className="material-symbols-outlined text-on-surface-variant mr-[6px] text-[18px]">calendar_month</span>
-            <input
-              className="bg-transparent border-none text-body-sm text-on-surface focus:outline-none w-[200px] pointer-events-none"
-              readOnly
-              value="Jan 01, 2024 - Dec 31, 2024"
-              type="text"
-            />
+            <select
+              className="bg-transparent border-none text-body-sm text-on-surface focus:outline-none appearance-none cursor-pointer pr-[8px]"
+              value={timeFilter}
+              onChange={(e) => setTimeFilter(e.target.value as any)}
+            >
+              <option value="all">All Time Data</option>
+              <option value="ytd">Year to Date (YTD)</option>
+              <option value="12m">Last 12 Months</option>
+            </select>
+            <span className="material-symbols-outlined text-on-surface-variant text-[16px] pointer-events-none">arrow_drop_down</span>
           </div>
           <div 
             className="flex items-center bg-background border border-outline-variant rounded px-[12px] py-[6px] cursor-pointer hover:bg-surface-variant transition-colors"
