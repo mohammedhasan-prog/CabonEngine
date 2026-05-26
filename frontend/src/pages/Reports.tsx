@@ -14,6 +14,9 @@ export default function Reports() {
 
   const byScope = summary?.by_scope || [];
   const bySource = summary?.by_source || [];
+  const byMonth = summary?.by_month || [];
+
+  const maxMonthAmount = Math.max(...byMonth.map((m: any) => m.amount || 0), 1);
 
   return (
     <AppShell
@@ -42,11 +45,11 @@ export default function Reports() {
           </div>
         </div>
         <div className="flex items-center gap-[8px]">
-          <button className="flex items-center gap-[6px] px-[12px] py-[6px] rounded border border-outline-variant text-body-sm text-on-surface hover:bg-surface-variant transition-colors">
+          <button onClick={() => alert("CSV Export feature coming soon!")} className="flex items-center gap-[6px] px-[12px] py-[6px] border border-outline-variant rounded text-on-surface text-body-sm hover:bg-surface-variant transition-colors">
             <span className="material-symbols-outlined text-[16px]">download</span>
             CSV
           </button>
-          <button className="flex items-center gap-[6px] px-[12px] py-[6px] rounded bg-primary text-on-primary text-body-sm hover:opacity-90 transition-opacity">
+          <button onClick={() => window.print()} className="flex items-center gap-[6px] px-[12px] py-[6px] rounded bg-primary text-on-primary text-body-sm hover:opacity-90 transition-opacity">
             <span className="material-symbols-outlined text-[16px]">picture_as_pdf</span>
             Export PDF
           </button>
@@ -86,12 +89,29 @@ export default function Reports() {
             </div>
           </div>
           <div className="p-[16px] h-[260px] flex items-end gap-[8px]">
-            {[40, 55, 30, 70, 50, 80].map((h, idx) => (
-              <div key={idx} className="flex-1 flex flex-col items-center gap-[8px]">
-                <div className={`w-full rounded-t bg-primary ${idx % 2 === 0 ? "opacity-60" : ""}`} style={{ height: `${h}%` }}></div>
-                <span className="text-label-sm text-on-surface-variant">M{idx + 1}</span>
+            {byMonth.length === 0 && (
+              <div className="w-full h-full flex items-center justify-center text-on-surface-variant text-body-sm">
+                No time-series data available yet.
               </div>
-            ))}
+            )}
+            {byMonth.map((item: any, idx: number) => {
+              const heightPct = Math.max(((item.amount || 0) / maxMonthAmount) * 100, 2);
+              const dateObj = new Date(item.month);
+              const monthLabel = dateObj.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+              return (
+                <div key={idx} className="flex-1 flex flex-col items-center gap-[8px] h-full justify-end group">
+                  <div 
+                    className="w-full rounded-t bg-primary opacity-80 group-hover:opacity-100 transition-opacity relative" 
+                    style={{ height: `${heightPct}%` }}
+                  >
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface border border-outline-variant text-on-surface text-label-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-lg">
+                      {Number(item.amount).toFixed(1)} MT
+                    </div>
+                  </div>
+                  <span className="text-[10px] sm:text-label-sm text-on-surface-variant whitespace-nowrap">{monthLabel}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 

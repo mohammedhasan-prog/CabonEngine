@@ -1,0 +1,5 @@
+MeterDate,ServiceType,kWh,Unit,SourceRecordId,Category,Scope
+2023-09-30,Electricity,4500,KWH,UTIL-100,Facility Power,scope_2
+2023-10-31,Electricity,4200,KWH,UTIL-101,Facility Power,scope_2
+2023-11-30,Electricity,5100,KWH,UTIL-102,Facility Power,scope_2
+2023-12-31,Electricity,4800,KWH,UTIL-103,Facility Power,scope_2

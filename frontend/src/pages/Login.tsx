@@ -18,7 +18,7 @@ export default function Login() {
     setError(null);
     try {
       await auth.login(email, password, tenant || undefined);
-      navigate("/records");
+      navigate("/dashboard");
     } catch (err: any) {
       setError(err?.response?.data?.detail || "Login failed");
     } finally {

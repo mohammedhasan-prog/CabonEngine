@@ -1,0 +1,5 @@
+PostingDate,Material,Quantity,Unit,SourceRecordId,Category,Scope
+2023-10-01,Diesel,150.5,L,SAP-001,Fleet Fuel,scope_1
+2023-10-15,Gasoline,85.2,GAL,SAP-002,Fleet Fuel,scope_1
+2023-11-02,Diesel,120.0,L,SAP-003,Fleet Fuel,scope_1
+2023-11-20,Gasoline,45.0,GAL,SAP-004,Fleet Fuel,scope_1

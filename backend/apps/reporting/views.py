@@ -1,4 +1,5 @@
 from django.db.models import Count, Sum
+from django.db.models.functions import TruncMonth
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -45,12 +46,19 @@ class SummaryReportView(TenantReportingQuerysetMixin, APIView):
         by_source = list(
             qs.values("source_system__type").annotate(count=Count("id"), amount=Sum("normalized_amount"))
         )
+        by_month = list(
+            qs.annotate(month=TruncMonth("activity_date"))
+            .values("month")
+            .annotate(count=Count("id"), amount=Sum("normalized_amount"))
+            .order_by("month")
+        )
         return Response(
             {
                 "totals": totals,
                 "by_status": by_status,
                 "by_scope": by_scope,
                 "by_source": by_source,
+                "by_month": by_month,
             }
         )
 

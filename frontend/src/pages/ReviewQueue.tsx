@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/client";
 import AppShell from "../components/AppShell";
+import RecordDetailDrawer from "../components/RecordDetailDrawer";
 
 const statusMeta: Record<string, { label: string; className: string }> = {
   imported: { label: "Imported", className: "bg-secondary/10 border-secondary/20 text-secondary" },
@@ -35,6 +36,27 @@ export default function ReviewQueue() {
   const [source, setSource] = useState("");
   const [onlyErrors, setOnlyErrors] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<any>(null);
+
+  const handleApprove = async (record: any, note: string = "") => {
+    try {
+      await api.post(`/records/${record.id}/approve/`, { note });
+      setSelectedRecord(null);
+      loadRecords();
+    } catch (err) {
+      console.error("Failed to approve", err);
+    }
+  };
+
+  const handleReject = async (record: any, note: string = "") => {
+    try {
+      await api.post(`/records/${record.id}/reject/`, { note });
+      setSelectedRecord(null);
+      loadRecords();
+    } catch (err) {
+      console.error("Failed to reject", err);
+    }
+  };
 
   const loadRecords = async () => {
     setLoading(true);
@@ -183,15 +205,31 @@ export default function ReviewQueue() {
                   {record.scope || "—"}
                 </div>
                 <div className="text-center">
-                  <Link className="text-primary text-label-sm" to={`/record/${record.id}`}>
-                    Open
-                  </Link>
+                  <button 
+                    className="text-primary text-label-sm font-bold hover:underline" 
+                    onClick={() => setSelectedRecord(record)}
+                  >
+                    Review
+                  </button>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+      
+      {selectedRecord && (
+        <RecordDetailDrawer
+          record={selectedRecord}
+          onClose={() => setSelectedRecord(null)}
+          onApprove={handleApprove}
+          onReject={handleReject}
+          onUpdate={(updated: any) => {
+            setSelectedRecord(updated);
+            loadRecords();
+          }}
+        />
+      )}
     </AppShell>
   );
 }

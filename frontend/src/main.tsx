@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import App from "./App";
 import Login from "./pages/Login";
-import Records from "./pages/Records";
+import { Navigate } from "react-router-dom";
 import AuditViewer from "./pages/AuditViewer";
 import Designs from "./pages/Designs";
 import Ingestion from "./pages/Ingestion";
@@ -22,8 +22,8 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<App />}> 
               <Route index element={<Login />} />
-              <Route path="records" element={<RequireAuth><Records /></RequireAuth>} />
-                <Route path="ingestion" element={<RequireAuth><Ingestion /></RequireAuth>} />
+              <Route path="records" element={<RequireAuth><Navigate to="/review" replace /></RequireAuth>} />
+              <Route path="ingestion" element={<RequireAuth><Ingestion /></RequireAuth>} />
               <Route path="review" element={<RequireAuth><ReviewQueue /></RequireAuth>} />
               <Route path="reports" element={<RequireAuth><Reports /></RequireAuth>} />
               <Route path="settings" element={<RequireAuth><Settings /></RequireAuth>} />
