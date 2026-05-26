@@ -1,0 +1,39 @@
+databases:
+  - name: esg-db
+    databaseName: esg
+    user: esg
+
+services:
+  - type: web
+    name: esg-backend
+    env: python
+    rootDir: backend
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: esg-db
+          property: connectionString
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_ENVIRONMENT
+        value: "production"
+      - key: DJANGO_SETTINGS_MODULE
+        value: "config.settings.production"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "esg-backend.onrender.com"
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://esg-frontend.onrender.com"
+
+  - type: web
+    name: esg-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: "./dist"
+    envVars:
+      - key: VITE_API_URL
+        value: "https://esg-backend.onrender.com"
