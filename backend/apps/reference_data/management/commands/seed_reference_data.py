@@ -5,6 +5,8 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand
 
 from apps.reference_data.models import EmissionFactor, SourceMapping, Unit, UnitConversion
+from apps.ingestion.models import SourceSystem
+from apps.tenants.models import Tenant
 
 
 class Command(BaseCommand):
@@ -85,4 +87,22 @@ class Command(BaseCommand):
                 defaults={"normalized_field": normalized_field},
             )
 
-        self.stdout.write(self.style.SUCCESS("Reference data seeded."))
+        sources = [
+            ("SAP ERP", "sap", "upload"),
+            ("Utility Portal", "utility", "upload"),
+            ("Corporate Travel", "travel", "upload"),
+        ]
+        tenants = Tenant.objects.all()
+        for tenant in tenants:
+            for name, type_val, connection_mode in sources:
+                SourceSystem.objects.update_or_create(
+                    tenant=tenant,
+                    name=name,
+                    defaults={
+                        "type": type_val,
+                        "connection_mode": connection_mode,
+                        "status": "active",
+                    }
+                )
+
+        self.stdout.write(self.style.SUCCESS("Reference data and source systems seeded."))

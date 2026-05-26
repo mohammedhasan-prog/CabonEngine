@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const navItems = [
@@ -26,9 +26,21 @@ export default function AppShell({
   rightSlot,
   searchPlaceholder,
 }: AppShellProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <div className="bg-background text-on-surface min-h-screen selection:bg-primary/30">
-      <aside className="fixed left-0 top-0 h-full w-[260px] bg-surface-container border-r border-outline-variant hidden lg:flex flex-col py-[24px] gap-[16px] z-50">
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      <aside
+        className={`fixed left-0 top-0 h-full w-[260px] bg-surface-container border-r border-outline-variant flex flex-col py-[24px] gap-[16px] z-50 transition-transform duration-300 ease-in-out ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
+      >
         <div className="px-[24px] mb-[24px]">
           <h1 className="text-headline-md font-headline-md font-black tracking-tight text-primary">CARBON.OS</h1>
         </div>
@@ -60,7 +72,13 @@ export default function AppShell({
 
       <header className="fixed top-0 right-0 h-[64px] z-40 bg-surface border-b border-outline-variant flex justify-between items-center px-[20px] lg:px-[32px] lg:ml-[260px] w-full lg:w-[calc(100%-260px)]">
         <div className="flex items-center gap-3 text-primary">
-          <span className="material-symbols-outlined text-xl">domain</span>
+          <button
+            className="lg:hidden p-2 -ml-2 text-on-surface-variant hover:bg-surface-variant rounded-full transition-colors"
+            onClick={() => setIsMobileMenuOpen(true)}
+          >
+            <span className="material-symbols-outlined">menu</span>
+          </button>
+          <span className="material-symbols-outlined text-xl hidden lg:block">domain</span>
           <span className="text-headline-sm font-headline-sm">Global Logistics Corp</span>
         </div>
         <div className="flex items-center gap-4">

@@ -31,7 +31,7 @@ export default function ExecutiveDashboard() {
     >
       <div className="flex justify-between items-end">
         <div></div>
-        <div className="flex gap-[8px]">
+        <div className="flex flex-wrap sm:flex-nowrap gap-[8px]">
           <button className="px-[12px] py-[8px] rounded border border-outline-variant bg-transparent text-label-md font-label-md hover:bg-surface-variant transition-colors flex items-center">
             <span className="material-symbols-outlined mr-[6px] text-[18px]">download</span>
             Export PDF
@@ -48,18 +48,18 @@ export default function ExecutiveDashboard() {
             <h3 className="text-headline-sm text-on-surface">Ingestion Health</h3>
             <span className="px-2 py-0.5 rounded bg-primary-container/20 text-primary text-label-sm border border-primary/30">Live</span>
           </div>
-          <div className="grid grid-cols-3 gap-[8px] mb-[12px]">
-            <div className="flex flex-col items-center p-[8px] bg-surface-container-low rounded border border-outline-variant/50">
+          <div className="grid grid-cols-3 gap-[4px] mb-[12px]">
+            <div className="flex flex-col items-center py-[8px] px-[2px] bg-surface-container-low rounded border border-outline-variant/50">
               <span className="text-headline-sm text-on-surface">2.4m</span>
-              <span className="text-label-sm text-on-surface-variant mt-1">Processed</span>
+              <span className="text-label-sm text-on-surface-variant mt-1 text-center break-words leading-tight">Processed</span>
             </div>
-            <div className="flex flex-col items-center p-[8px] bg-surface-container-low rounded border border-outline-variant/50">
+            <div className="flex flex-col items-center py-[8px] px-[2px] bg-surface-container-low rounded border border-outline-variant/50">
               <span className="text-headline-sm text-amber-400">12k</span>
-              <span className="text-label-sm text-on-surface-variant mt-1">Pending</span>
+              <span className="text-label-sm text-on-surface-variant mt-1 text-center break-words leading-tight">Pending</span>
             </div>
-            <div className="flex flex-col items-center p-[8px] bg-error-container/20 rounded border border-error/30">
+            <div className="flex flex-col items-center py-[8px] px-[2px] bg-error-container/20 rounded border border-error/30">
               <span className="text-headline-sm text-error">43</span>
-              <span className="text-label-sm text-error/80 mt-1">Failed</span>
+              <span className="text-label-sm text-error/80 mt-1 text-center break-words leading-tight">Failed</span>
             </div>
           </div>
           <div>

@@ -7,7 +7,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [tenant, setTenant] = useState("demo-tenant");
+  const [tenant, setTenant] = useState("glc");
   const [role, setRole] = useState("analyst");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +72,9 @@ export default function Login() {
           </label>
           <div className="relative">
             <select className="w-full appearance-none bg-surface-dim border border-outline-variant rounded font-body-md text-body-md text-on-surface px-4 py-3 pr-10 outline-none transition-colors industrial-input" id="tenant" name="tenant" required value={tenant} onChange={(e) => setTenant(e.target.value)}>
-              <option value="demo-tenant">Global Logistics Corp</option>
+              <option value="glc">Global Logistics Corp</option>
+              <option value="tim">Tesla India Mfg</option>
+              <option value="ere">EcoRetail Europe</option>
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-on-surface-variant">
               <span className="material-symbols-outlined">expand_more</span>
