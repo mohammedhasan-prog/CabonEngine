@@ -1,5 +1,6 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.views import APIView
 
 from .models import IngestionJob
@@ -9,6 +10,7 @@ from .serializers import (
     IngestionUploadSerializer,
 )
 from apps.audit.models import AuditEvent
+from .services import process_ingestion_job
 
 
 class TenantIngestionQuerysetMixin:
@@ -35,6 +37,7 @@ class IngestionJobDetailView(TenantIngestionQuerysetMixin, generics.RetrieveAPIV
 
 class IngestionUploadView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
         serializer = IngestionUploadSerializer(data=request.data, context={"request": request})
@@ -66,4 +69,6 @@ class IngestionRunView(APIView):
             object_id=str(ingestion_job.id),
             payload={"status": ingestion_job.status, "started_at": ingestion_job.started_at.isoformat() if ingestion_job.started_at else None},
         )
-        return Response(IngestionJobSerializer(ingestion_job).data)
+
+        processed_job = process_ingestion_job(ingestion_job, request.user)
+        return Response(IngestionJobSerializer(processed_job).data)

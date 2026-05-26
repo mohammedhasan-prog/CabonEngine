@@ -34,3 +34,12 @@ class AuditEventDetailView(TenantAuditQuerysetMixin, generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = AuditEventSerializer
     lookup_field = "id"
+
+
+class AuditEventEntityView(TenantAuditQuerysetMixin, generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = AuditEventSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(object_type=self.kwargs["object_type"], object_id=self.kwargs["object_id"])

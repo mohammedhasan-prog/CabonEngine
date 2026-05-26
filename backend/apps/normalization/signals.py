@@ -11,7 +11,7 @@ def log_normalized_record_create(sender, instance, created, **kwargs):
         return
     actor = getattr(instance, "created_by", None)
     if not actor:
-        ingestion_job = getattr(instance, "ingestion_job", None)
+        ingestion_job = getattr(getattr(instance, "raw_record", None), "ingestion_job", None)
         if ingestion_job is not None:
             actor = getattr(ingestion_job, "initiated_by", None)
 

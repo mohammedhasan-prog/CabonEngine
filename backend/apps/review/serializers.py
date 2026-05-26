@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.normalization.models import NormalizedRecord
+from apps.normalization.models import NormalizedRecord, RawRecord
 
 from .models import ReviewAction
 
@@ -43,6 +43,17 @@ class NormalizedRecordSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
+
+
+class RawRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RawRecord
+        fields = ("id", "raw_payload", "source_row_ref", "created_at")
+        read_only_fields = fields
+
+
+class NormalizedRecordDetailSerializer(NormalizedRecordSerializer):
+    raw_record = RawRecordSerializer(read_only=True)
 
 
 class RecordUpdateSerializer(serializers.ModelSerializer):

@@ -9,7 +9,7 @@ from apps.normalization.models import NormalizedRecord
 from .models import ReviewAction
 from apps.audit.models import AuditEvent
 from .permissions import CanModifyRecord
-from .serializers import NormalizedRecordSerializer, RecordUpdateSerializer
+from .serializers import NormalizedRecordDetailSerializer, NormalizedRecordSerializer, RecordUpdateSerializer
 
 
 class TenantRecordQuerysetMixin:
@@ -59,7 +59,7 @@ class RecordDetailView(TenantRecordQuerysetMixin, generics.RetrieveUpdateAPIView
 
     def get_serializer_class(self):
         if self.request.method == "GET":
-            return NormalizedRecordSerializer
+            return NormalizedRecordDetailSerializer
         return RecordUpdateSerializer
 
     def patch(self, request, *args, **kwargs):

@@ -9,4 +9,6 @@ urlpatterns = [
     path("ingestions/", include("apps.ingestion.urls")),
     path("records/", include("apps.review.urls")),
     path("audit/", include("apps.audit.urls")),
+    path("reports/", include("apps.reporting.urls")),
+    path("reference-data/", include("apps.reference_data.urls")),
 ]

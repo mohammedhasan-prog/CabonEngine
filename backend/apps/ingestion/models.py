@@ -51,6 +51,7 @@ class IngestionJob(UUIDModel, TimeStampedModel):
         on_delete=models.SET_NULL,
         related_name="initiated_ingestion_jobs",
     )
+    upload = models.FileField(upload_to="ingestions/%Y/%m/%d", blank=True, null=True)
     file_name = models.CharField(max_length=255, blank=True)
     api_batch_id = models.CharField(max_length=255, blank=True)
     started_at = models.DateTimeField(null=True, blank=True)

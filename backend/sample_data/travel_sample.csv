@@ -1,0 +1,4 @@
+TripDate,Distance,Unit,Mode,SourceRecordId,Category,Scope
+2025-01-05,1200,KM,AirTravel,TRV-001,Travel,scope_3
+2025-01-18,750,MI,AirTravel,TRV-002,Travel,scope_3
+2025-02-10,300,KM,AirTravel,TRV-003,Travel,scope_3

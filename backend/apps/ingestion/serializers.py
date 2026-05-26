@@ -19,6 +19,7 @@ class IngestionJobSerializer(serializers.ModelSerializer):
             "id",
             "tenant",
             "source_system",
+            "upload",
             "file_name",
             "api_batch_id",
             "started_at",
@@ -33,7 +34,7 @@ class IngestionJobSerializer(serializers.ModelSerializer):
 
 class IngestionUploadSerializer(serializers.Serializer):
     source_system_id = serializers.UUIDField()
-    file_name = serializers.CharField(max_length=255)
+    file = serializers.FileField()
 
     def validate_source_system_id(self, value):
         request = self.context["request"]
@@ -47,11 +48,13 @@ class IngestionUploadSerializer(serializers.Serializer):
     def create(self, validated_data):
         request = self.context["request"]
         source_system = SourceSystem.objects.get(id=validated_data["source_system_id"])
+        upload = validated_data["file"]
         return IngestionJob.objects.create(
             tenant=request.user.tenant,
             source_system=source_system,
             initiated_by=request.user,
-            file_name=validated_data["file_name"],
+            upload=upload,
+            file_name=upload.name,
             status=IngestionJob.Status.PENDING,
         )
 

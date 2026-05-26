@@ -1,0 +1,4 @@
+PostingDate,Material,Quantity,Unit,SourceRecordId,Category,Scope
+2025-01-15,Diesel,1200,L,SAP-001,Fuel,scope_1
+2025-01-20,Gasoline,450,GAL,SAP-002,Fuel,scope_1
+2025-02-02,Diesel,800,L,SAP-003,Fuel,scope_1
