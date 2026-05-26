@@ -6,6 +6,7 @@ type User = { id: string; email: string; name?: string } | null;
 
 const AuthContext = createContext<{
   user: User;
+  isLoading: boolean;
   login: (username: string, password: string, tenant?: string) => Promise<void>;
   logout: () => void;
 } | null>(null);
@@ -18,15 +19,18 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Optionally fetch profile if token exists
     const access = tokenStore.getAccessToken();
     if (access) {
       api
         .get("/auth/me/")
         .then((r) => setUser(r.data))
-        .catch(() => tokenStore.clear());
+        .catch(() => tokenStore.clear())
+        .finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -46,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
-  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, isLoading, login, logout }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;
